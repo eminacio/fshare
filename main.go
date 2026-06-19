@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 func MiddlewareLogger(logger *slog.Logger, next http.Handler) http.Handler {
@@ -18,11 +19,13 @@ func MiddlewareLogger(logger *slog.Logger, next http.Handler) http.Handler {
 
 func main() {
 	type Config struct {
-		Port string
+		Port      string
+		Directory string
 	}
 	var cfg Config
 
 	flag.StringVar(&cfg.Port, "port", "8000", "server port")
+	flag.StringVar(&cfg.Directory, "directory", "", "path to your folder")
 	flag.Parse()
 
 	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
@@ -33,7 +36,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	handler := http.FileServer(http.Dir(wd))
+	dirpath := filepath.Join(wd, cfg.Directory)
+
+	handler := http.FileServer(http.Dir(dirpath))
 
 	http.Handle("GET /", MiddlewareLogger(logger, handler))
 

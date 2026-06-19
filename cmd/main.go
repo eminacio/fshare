@@ -1,20 +1,44 @@
 package main
 
 import (
-	"log"
+	"flag"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 )
 
+func MiddlewareLogger(logger *slog.Logger, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		msg := fmt.Sprintf("%s %s %s", r.Method, r.URL.Path, r.Proto)
+		logger.Info(msg)
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
+	type Config struct {
+		Port string
+	}
+	var cfg Config
+
+	flag.StringVar(&cfg.Port, "port", "8000", "server port")
+	flag.Parse()
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+
 	wd, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		logger.Error(err.Error())
+		os.Exit(1)
 	}
 
 	handler := http.FileServer(http.Dir(wd))
 
-	http.Handle("GET /", handler)
+	http.Handle("GET /", MiddlewareLogger(logger, handler))
 
-	http.ListenAndServe(":8000", nil)
+	msg := fmt.Sprintf("Serving HTTP on :: port %s", cfg.Port)
+	logger.Info(msg)
+
+	http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), nil)
 }

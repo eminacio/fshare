@@ -17,11 +17,12 @@ func MiddlewareLogger(logger *slog.Logger, next http.Handler) http.Handler {
 	})
 }
 
+type Config struct {
+	Port      string
+	Directory string
+}
+
 func main() {
-	type Config struct {
-		Port      string
-		Directory string
-	}
 	var cfg Config
 
 	flag.StringVar(&cfg.Port, "port", "8000", "server port")
@@ -37,13 +38,22 @@ func main() {
 	}
 
 	dirpath := filepath.Join(wd, cfg.Directory)
-
 	handler := http.FileServer(http.Dir(dirpath))
 
-	http.Handle("GET /", MiddlewareLogger(logger, handler))
+	mux := http.NewServeMux()
+	mux.Handle("GET /", MiddlewareLogger(logger, handler))
 
-	msg := fmt.Sprintf("Serving HTTP on :: port %s", cfg.Port)
-	logger.Info(msg)
+	srv := &http.Server{
+		Addr:     fmt.Sprintf(":%s", cfg.Port),
+		Handler:  mux,
+		ErrorLog: slog.NewLogLogger(logger.Handler(), slog.LevelError),
+	}
 
-	http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), nil)
+	logger.Info(fmt.Sprintf("Serving HTTP on :: port %s", cfg.Port))
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		logger.Error(err.Error())
+		os.Exit(1)
+	}
 }

@@ -6,7 +6,7 @@ fshare is very simple webserver that is useful for development, testing and file
 
 Make sure you have go installed in your machine or follow the instructions on [Go website](https://go.dev/doc/install) to install go. Once installed, run the following command on your terminal to install `fshare` server.
 
-`go install github.com/eminacio/fshare`
+`go install github.com/eminacio/fshare@latest`
 
 ## Usage
 

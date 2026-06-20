@@ -17,7 +17,12 @@ Make sure you have go installed in your machine or follow the instructions on [G
     The options which apply to the fshare command are:
 
     -port, --port PORT_NUMBER
-        Set the server port where to listen for requests. By default, when this option is not specified, fshare listens for requests on port 8000.
+        Set the server port where to listen for requests.
+        By default, when this option is not specified,
+        fshare listens for requests on port 8000.
 
     -directory, --directory DIRECTORY
-     Set a specific directory where to serve files from. The path to the directory can be either relative or absolute path. When this option is not set, the default behavior is to serve files from the current working directory.
+     Set a specific directory where to serve files from.
+     The path to the directory can be either relative or absolute path.
+     When this option is not set, the default behavior is to serve files
+     from the current working directory.

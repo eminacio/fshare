@@ -1,6 +1,8 @@
-# fshare
+<h1 align="center">fshare</h1>
 
-fshare is very simple webserver that is useful for development, testing and file sharing on a local network.
+<h4 align="center">
+    A very simple web server for static file serving.
+  </h4>
 
 ## Install
 

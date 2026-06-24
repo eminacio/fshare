@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -31,6 +32,8 @@ func main() {
 
 	srv, err := fshare.NewServer(cfg, logger)
 
+	msg := fmt.Sprintf("Serving HTTP on :: port %s", cfg.Port)
+	logger.Info(msg)
 	err = srv.ListenAndServe()
 	if err != nil {
 		logger.Error(err.Error())
